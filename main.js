@@ -30,11 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const updateActiveSection = () => {
     scrollFrame = undefined;
-    const readingLine = window.innerHeight * 0.35;
 
     if (selectedSection) {
-      const selectedBounds = selectedSection.getBoundingClientRect();
-      const selectedIsInPosition = selectedBounds.top <= readingLine && selectedBounds.bottom > readingLine;
+      const selectedIsInPosition = window.scrollY >= selectedSection.offsetTop - 1;
 
       if (!selectedIsInPosition) {
         return;
@@ -43,10 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
       selectedSection = undefined;
     }
 
-    const activeSection = sections.find((section) => {
-      const bounds = section.getBoundingClientRect();
-      return bounds.top <= readingLine && bounds.bottom > readingLine;
-    });
+    const activeSection = sections.reduce((currentSection, section) => {
+      return section.offsetTop <= window.scrollY + 1 ? section : currentSection;
+    }, sections[0]);
 
     if (activeSection) {
       setActiveLink(`#${activeSection.id}`);

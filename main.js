@@ -1,9 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
   const navigationLinks = document.querySelectorAll('.main-nav a[href^="#"]');
+  const nav = document.querySelector('.main-nav');
+  const navIndicator = document.querySelector('.nav-indicator');
   const sections = [...navigationLinks]
     .map((link) => document.querySelector(link.getAttribute('href')))
     .filter(Boolean);
   let selectedSection;
+
+  const updateNavIndicator = () => {
+    if (!nav || !navIndicator) return;
+
+    const activeLink = document.querySelector('.main-nav a.is-active');
+    if (!activeLink) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const activeRect = activeLink.getBoundingClientRect();
+
+    navIndicator.style.width = `${activeRect.width}px`;
+    navIndicator.style.transform = `translateX(${activeRect.left - navRect.left}px)`;
+  };
 
   const setActiveLink = (hash) => {
     navigationLinks.forEach((link) => {
@@ -16,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
         link.removeAttribute('aria-current');
       }
     });
+
+    updateNavIndicator();
   };
 
   navigationLinks.forEach((link) => {
@@ -59,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('hashchange', () => {
     setActiveLink(window.location.hash || '#feed');
   });
+
+  window.addEventListener('resize', updateNavIndicator);
 
   setActiveLink(window.location.hash || '#feed');
   updateActiveSection();
